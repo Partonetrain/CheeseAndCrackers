@@ -141,7 +141,7 @@ public:
                         Space s = getSpace(col, row);
                         if (s.getFill() == p) {
                             consecutiveSpaces++;
-                            //std::cout << "h: consecutiveSpaces: " << consecutiveSpaces << " / boardSize: " << boardSize << " " << std::endl;
+                            std::cout << "h: consecutiveSpaces: " << consecutiveSpaces << " / boardSize: " << boardSize << " " << std::endl;
                             if (consecutiveSpaces == boardSize) {
                                 ret = p; //set the winner
                                 stop = true;
@@ -174,7 +174,7 @@ public:
                             Space s = getSpace(col, row);
                             if (s.getFill() == p) {
                                 consecutiveSpaces++;
-                                //std::cout << "v: consecutiveSpaces: " << consecutiveSpaces << " / boardSize: " << boardSize << " " << std::endl;
+                                std::cout << "v: consecutiveSpaces: " << consecutiveSpaces << " / boardSize: " << boardSize << " " << std::endl;
                                 if (consecutiveSpaces == boardSize) {
                                     ret = p; //set the winner
                                     stop = true;
@@ -199,7 +199,7 @@ public:
                     }
                 }
 
-                //TODO
+
                 //diagonal (top left->bottom right) win condition
                 if (ret == ' ') { //only check diagonal win condition if previous two didn't return anything
 
