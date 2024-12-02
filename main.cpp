@@ -8,31 +8,45 @@
 #include <vector>
 
 struct BoardPosition {
-    int row = -1;
-    int col = -1;
+    int row, col;
 };
 
 
 class Space {
+public:
+    enum Inner {
+        EMPTY,
+        CHEESE,
+        CRACKER
+    };
+
 private:
-    char fill = ' '; //empty space by default
+    Inner fill;
 
 public:
-    char getFill() {
+    Inner getFill() {
         return fill;
     }
 
     bool isEmpty() {
-        return fill == ' ';
+        return fill == EMPTY;
     }
 
     bool isCheese() {
-        return fill == 'H';
+        return fill == CHEESE;
     }
 
     bool isCracker() {
-        return fill == 'R';
+        return fill == CRACKER;
     }
+
+    Space() {
+        fill = EMPTY;
+    };
+
+    Space(Inner fill) {
+        this->fill = fill;
+    };
 
     std::string toEmoji() { //this doesn't work in the console display, but it's here for possible future versions
         if (this->isCheese()) {
@@ -46,8 +60,41 @@ public:
         }
     }
 
-    void setFill(char fill) {
+    void setFill(Inner fill) {
         this->fill = fill;
+    }
+
+    void setFill(char fill) {
+        Inner eFill = charToInner(fill);
+        this->fill = eFill;
+    }
+
+    static Inner charToInner(char c) {
+        Inner ret;
+        if (c == 'H') {
+            ret = CHEESE;
+        }
+        else if (c == 'R') {
+            ret = CRACKER;
+        }
+        else {
+            ret = EMPTY;
+        }
+        return ret;
+    }
+    
+    static char innerToChar(Inner i) {
+        char ret;
+        if (i == CHEESE) {
+            ret = 'H';
+        }
+        else if (i == CRACKER) {
+            ret = 'C';
+        }
+        else {
+            ret = ' ';
+        }
+        return ret;
     }
 
 };
@@ -64,7 +111,7 @@ public:
         //top of board with addresses (letters across the top)
         std::cout << "  ";
         for (int colLabel = 0; colLabel < boardSize; colLabel++) {
-            std::cout << "  " << IntToChar(colLabel) << " ";
+            std::cout << "  " << intToChar(colLabel) << " ";
         }
         std::cout << std::endl;
 
@@ -79,7 +126,8 @@ public:
             std::cout << rowLabel << "|";
             for (int col = 0; col < boardSize; col++) {
                 //spaces[row][col].setCheese(); //used to test layout
-                std::cout << " " << spaces[row][col].getFill() << " |";
+                Space::Inner fill = spaces[row][col].getFill();
+                std::cout << " " << Space::innerToChar(fill) << " |";
             }
             std::cout << std::endl;
             //horizontal lines
@@ -100,8 +148,7 @@ public:
         boardSize = size;
         for (int row = 0; row < boardSize; row++) {
             for (int col = 0; col < boardSize; col++) {
-                Space s = Space(); //construct a new empty space
-                spaces[col][row] = s;
+                spaces[col][row] = Space(); //construct a new empty space
                 //std::cout << "row: " << row << " col: " << col << std::endl;
             }
 
@@ -125,13 +172,14 @@ public:
     }
 
     char checkWinner() {
+        char ret = ' ';
+        bool stop = false;
         if (turn < minWinTurns) {
-            return ' ';
+            stop = true;
         }
-        else
+        else if (!stop)
         {
             char ret = ' ';
-            bool stop = false;
             int consecutiveSpaces = 0;
             char players[] = { 'R', 'H' };
             for (char p : players) { //we want to try for each plater
@@ -139,7 +187,8 @@ public:
                 for (int col = 0; col < boardSize; col++) {
                     for (int row = 0; row < boardSize; row++) {
                         Space s = getSpace(col, row);
-                        if (s.getFill() == p) {
+                        Space::Inner i = Space::charToInner(p);
+                        if (s.getFill() == i) {
                             consecutiveSpaces++;
                             //std::cout << "h: consecutiveSpaces: " << consecutiveSpaces << " / boardSize: " << boardSize << " " << std::endl;
                             if (consecutiveSpaces == boardSize) {
@@ -231,7 +280,7 @@ public:
         return turn;
     }
 
-    static char IntToChar(int i) {
+    static char intToChar(int i) {
         return (char)i + 65; //65 is where the capital alphabet starts in ASCII
     }
 
@@ -344,6 +393,7 @@ int main() {
         g.show();
         std::string move;
         int playerNum = player1Goes ? 1 : 2;
+        char playerChar = player1Goes ? 'H' : 'R';
         std::cout << "Player " << playerNum << ", where will you place your " << player1 << "?" << std::endl;
         std::cout << "Use column-row notation, e.g. B2, or input anything else to pass your turn" << std::endl;
         std::getline(std::cin, move);
