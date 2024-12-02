@@ -361,3 +361,9 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+#More Visual Studio suff
+.vs/
+enc_temp_folder/
+*.user
+TestResults/
